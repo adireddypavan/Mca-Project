@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Repair Hub - Auth</title>
+
+  <style>
+    :root {
+      --white: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+
+      --btn1: #11c5a3;
+      --btn2: #0fb18f;
+
+      --radius: 28px;
+      --shadow: 0 26px 70px rgba(0, 0, 0, .18);
+      --shadow-soft: 0 14px 35px rgba(0, 0, 0, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .waves-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      background:
+        radial-gradient(1200px 520px at 50% 40%, rgba(76, 111, 255, .18), transparent 62%),
+        radial-gradient(900px 520px at 78% 55%, rgba(47, 181, 255, .12), transparent 60%),
+        radial-gradient(900px 520px at 22% 55%, rgba(122, 92, 255, .10), transparent 60%),
+        linear-gradient(180deg, #050d14, #061018);
+      overflow: hidden;
+    }
+
+    .waves-bg::before,
+    .waves-bg::after {
+      content: "";
+      position: absolute;
+      left: -20%;
+      width: 140%;
+      height: 55%;
+      top: 12%;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(56, 214, 255, .22), transparent 55%),
+        radial-gradient(circle at 65% 55%, rgba(76, 111, 255, .18), transparent 58%),
+        radial-gradient(circle at 80% 30%, rgba(122, 92, 255, .15), transparent 58%);
+      filter: blur(18px);
+      opacity: .9;
+      transform: rotate(-6deg);
+      animation: waveMove 9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .waves-bg::after {
+      top: 38%;
+      opacity: .7;
+      filter: blur(24px);
+      animation-duration: 12s;
+      animation-direction: reverse;
+    }
+
+    @keyframes waveMove {
+      0% {
+        transform: translateX(-6%) translateY(0) rotate(-6deg) scale(1);
+      }
+
+      50% {
+        transform: translateX(6%) translateY(10px) rotate(-6deg) scale(1.02);
+      }
+
+      100% {
+        transform: translateX(-6%) translateY(0) rotate(-6deg) scale(1);
+      }
+    }
+
+    canvas#particleBg {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: -1px;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(1100px 740px at 50% 40%, rgba(0, 0, 0, 0), rgba(0, 0, 0, .60) 78%),
+        linear-gradient(180deg, rgba(0, 0, 0, .18), rgba(0, 0, 0, .32));
+      mix-blend-mode: multiply;
+    }
+
+    .auth-wrap {
+      width: min(980px, 100%);
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .left {
+      position: relative;
+      padding: 26px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-card {
+      position: relative;
+      width: 100%;
+      min-height: 520px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      background:
+        radial-gradient(140px 140px at 18% 18%, rgba(255, 200, 60, .95), rgba(255, 200, 60, 0) 60%),
+        radial-gradient(180px 180px at 26% 60%, rgba(255, 120, 55, .92), rgba(255, 120, 55, 0) 62%),
+        radial-gradient(260px 260px at 74% 30%, rgba(25, 215, 190, .95), rgba(25, 215, 190, 0) 62%),
+        radial-gradient(260px 260px at 88% 88%, rgba(20, 90, 160, .92), rgba(20, 90, 160, 0) 65%),
+        linear-gradient(140deg, #0c2e52, #0aa1a7);
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(420px 280px at 50% 55%, rgba(0, 0, 0, .28), rgba(0, 0, 0, 0) 70%);
+      filter: blur(6px);
+      opacity: .9;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(.2px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .14);
+      opacity: .95;
+      z-index: 3;
+      animation: floaty var(--dur, 10s) ease-in-out infinite;
+      will-change: transform;
+    }
+
+    @keyframes floaty {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(10px, -14px) scale(1.04);
+      }
+
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+    }
+
+    .b1 {
+      width: 92px;
+      height: 92px;
+      left: 10px;
+      top: 12px;
+      --dur: 10s;
+      background: radial-gradient(circle at 30% 30%, #2ad6d1, #0b8e90);
+    }
+
+    .b2 {
+      width: 54px;
+      height: 54px;
+      left: 140px;
+      top: 38px;
+      --dur: 8s;
+      background: radial-gradient(circle at 30% 30%, #ffd56a, #ff9f1a);
+    }
+
+    .b3 {
+      width: 110px;
+      height: 110px;
+      left: 96px;
+      top: 70px;
+      --dur: 12s;
+      background: radial-gradient(circle at 30% 30%, #ffcf61, #ff7a2f);
+      opacity: .9;
+    }
+
+    .b4 {
+      width: 96px;
+      height: 96px;
+      right: 22px;
+      top: 62px;
+      --dur: 11s;
+      background: radial-gradient(circle at 30% 30%, #2de5c7, #0aa19a);
+    }
+
+    .left-content {
+      position: absolute;
+      inset: 0;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 4;
+      color: #fff;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 140, 40, .82);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .18);
+      font-weight: 800;
+      letter-spacing: .4px;
+      font-size: 12px;
+      width: max-content;
+      text-transform: uppercase;
+    }
+
+    .left-main h2 {
+      margin: 14px 0 0;
+      font-size: 18px;
+      font-weight: 700;
+      opacity: .95;
+    }
+
+    .left-main h1 {
+      margin: 6px 0 0;
+      font-size: 30px;
+      letter-spacing: -.3px;
+      line-height: 1.15;
+    }
+
+    .left-main p {
+      margin: 10px 0 0;
+      font-size: 12.5px;
+      opacity: .85;
+      max-width: 46ch;
+      line-height: 1.6;
+    }
+
+    .left-footer {
+      font-size: 13px;
+      opacity: .95;
+    }
+
+    .left-footer a {
+      color: #fff;
+      font-weight: 800;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, .55);
+      padding-bottom: 2px;
+    }
+
+    .left-footer a:hover {
+      border-bottom-color: #fff;
+    }
+
+    .right {
+      padding: 46px 52px;
+      background: #fff;
+    }
+
+    .right h3 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: -.4px;
+      color: #2b1b1f;
+    }
+
+    .sub {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-top: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #3b3b3b;
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+
+    .input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      padding: 0 12px;
+      outline: none;
+      font-size: 14px;
+      background: #fff;
+      transition: .18s ease;
+    }
+
+    .input:focus {
+      border-color: rgba(17, 197, 163, .65);
+      box-shadow: 0 0 0 4px rgba(17, 197, 163, .16);
+    }
+
+    .inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 2px;
+      color: #555;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .inline input {
+      accent-color: var(--btn1);
+    }
+
+    .primary-btn {
+      width: 100%;
+      height: 48px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(90deg, var(--btn1), var(--btn2));
+      box-shadow: 0 14px 28px rgba(17, 197, 163, .28);
+      transition: .18s ease;
+      font-size: 14px;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:active {
+      transform: translateY(0px);
+    }
+
+    .help-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+      gap: 10px;
+    }
+
+    .link {
+      color: #0aa19a;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    /* Message / toast */
+    .msg {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .msg.ok {
+      display: block;
+      background: rgba(17, 197, 163, .10);
+      border-color: rgba(17, 197, 163, .35);
+      color: #0b6b5c;
+    }
+
+    .msg.err {
+      display: block;
+      background: rgba(239, 68, 68, .10);
+      border-color: rgba(239, 68, 68, .35);
+      color: #8a1f1f;
+    }
+
+    @media (max-width: 900px) {
+      .auth-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .right {
+        padding: 34px 22px;
+      }
+
+      .left {
+        padding: 18px;
+      }
+
+      .glass-card {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="waves-bg"></div>
+  <canvas id="particleBg"></canvas>
+  <div class="vignette"></div>
+
+  <section class="auth-wrap">
+    <div class="left">
+      <div class="bubble b1"></div>
+      <div class="bubble b2"></div>
+      <div class="bubble b3"></div>
+      <div class="bubble b4"></div>
+
+      <div class="glass-card">
+        <div class="left-content">
+          <div class="left-main">
+            <div class="tag">SMART REPAIR HUB</div>
+            <h2>Welcome back</h2>
+            <h1>Book, manage, and track repairs — in one place.</h1>
+            <p>
+              Secure access for customers and admins. Create bookings faster, keep records organized,
+              and follow technician assignments with clarity.
+            </p>
+          </div>
+
+          <div class="left-footer">
+            <span id="leftSwitchText">Already have an account?</span>
+            <a href="index.html" id="leftSwitchLink" onclick="switchMode('login');return false;">Sign in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <h3 id="formTitle">Create account</h3>
+      <p class="sub" id="formSub">Sign up to start booking services and managing your requests.</p>
+
+      <form onsubmit="return submitForm(event)" autocomplete="on">
+        <div class="field" id="nameField">
+          <label for="name">Full name</label>
+          <input class="input" id="name" type="text" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+          <input class="input" id="email" type="email" placeholder="Enter your email" required />
+        </div>
+
+        <div class="field">
+          <label for="password" id="passLabel">Create password</label>
+          <input class="input" id="password" type="password" placeholder="Enter a strong password" required
+            minlength="6" />
+        </div>
+
+        <div class="inline">
+          <input id="showPass" type="checkbox" onclick="togglePassword()" />
+          <label for="showPass" style="margin:0;font-weight:700;">Show password</label>
+        </div>
+
+        <button class="primary-btn" id="submitBtn" type="submit">Create account →</button>
+
+        <div class="help-row">
+          <a class="link" href="#" onclick="switchMode(mode==='signup'?'login':'signup');return false;"
+            id="switchInline">
+            Already have an account? Sign in
+          </a>
+          <a class="link" href="#" onclick="forgotPassword();return false;">Forgot password?</a>
+        </div>
+
+        <div id="msg" class="msg"></div>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    /* ===========================
+       BACKGROUND DOT WAVES
+    ============================ */
+    const canvas = document.getElementById("particleBg");
+    const ctx = canvas.getContext("2d");
+
+    let W = 0, H = 0, DPR = 1;
+
+    function resize() {
+      DPR = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const colors = ["#4c6fff", "#2fb5ff", "#7a5cff", "#6aa4ff", "#38d6ff"];
+    const dots = [];
+    const count = 780;
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    function buildDots() {
+      dots.length = 0;
+      for (let i = 0; i < count; i++) {
+        const layer = Math.random();
+        dots.push({
+          x: rand(-80, W + 80),
+          y: rand(0, H),
+          r: rand(1.0, 5.4) * (0.55 + layer),
+          c: colors[(Math.random() * colors.length) | 0],
+          vx: rand(0.16, 0.75) * (0.45 + layer),
+          phase: rand(0, Math.PI * 2),
+          amp: rand(14, 64) * (0.35 + layer),
+          speed: rand(0.0016, 0.0085) * (0.55 + layer),
+          layer
+        });
+      }
+    }
+    buildDots();
+    window.addEventListener("resize", () => setTimeout(buildDots, 40));
+
+    let t = 0;
+    function animateBg() {
+      ctx.clearRect(0, 0, W, H);
+
+      for (const p of dots) {
+        const wave = Math.sin(t * 2 * Math.PI * p.speed + p.phase) * p.amp;
+        p.x += p.vx;
+        if (p.x > W + 90) p.x = -90;
+
+        ctx.beginPath();
+        ctx.fillStyle = p.c;
+        ctx.globalAlpha = 0.14 + p.layer * 0.72;
+        ctx.arc(p.x, p.y + wave, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      t += 1;
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+    /* ===========================
+       REAL SIGNUP / LOGIN (localStorage)
+    ============================ */
+    const REDIRECT_URL = "/home"; // ✅ Change to your main webpage file
+
+    let mode = "signup"; // signup | login
+
+    const el = (id) => document.getElementById(id);
+
+    function setMsg(type, text) {
+      const box = el("msg");
+      box.className = "msg " + (type === "ok" ? "ok" : "err");
+      box.textContent = text;
+      box.style.display = "block";
+    }
+
+    function clearMsg() {
+      const box = el("msg");
+      box.style.display = "none";
+      box.textContent = "";
+      box.className = "msg";
+    }
+
+    function togglePassword() {
+      const pass = el("password");
+      pass.type = (pass.type === "password") ? "text" : "password";
+    }
+
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem("srh_users") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("srh_users", JSON.stringify(users));
+    }
+
+    function setSession(user) {
+      // session for your app pages
+      localStorage.setItem("srh_session", JSON.stringify({
+        email: user.email,
+        name: user.name,
+        loginAt: Date.now()
+      }));
+    }
+
+    function normalizeEmail(email) {
+      return (email || "").trim().toLowerCase();
+    }
+
+    // Simple "hash-like" obfuscation (front-end only). For real security use backend.
+    function simpleHash(str) {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return (h >>> 0).toString(16);
+    }
+
+    function switchMode(to) {
+      clearMsg();
+      mode = to;
+
+      const title = el("formTitle");
+      const sub = el("formSub");
+      const btn = el("submitBtn");
+      const passLabel = el("passLabel");
+      const nameField = el("nameField");
+
+      const leftSwitchText = el("leftSwitchText");
+      const leftSwitchLink = el("leftSwitchLink");
+      const switchInline = el("switchInline");
+
+      // reset inputs
+      el("email").value = "";
+      el("password").value = "";
+      if (el("name")) el("name").value = "";
+      el("showPass").checked = false;
+      el("password").type = "password";
+
+      if (mode === "login") {
+        title.textContent = "Sign in";
+        sub.textContent = "Enter your account details to continue to Smart Repair Hub.";
+        btn.textContent = "Sign in →";
+        passLabel.textContent = "Password";
+        nameField.style.display = "none";
+
+        leftSwitchText.textContent = "New here?";
+        leftSwitchLink.textContent = "Create an account";
+        leftSwitchLink.setAttribute("onclick", "switchMode('signup');return false;");
+
+        switchInline.textContent = "New here? Create an account";
+      } else {
+        title.textContent = "Create account";
+        sub.textContent = "Sign up to start booking services and managing your requests.";
+        btn.textContent = "Create account →";
+        passLabel.textContent = "Create password";
+        nameField.style.display = "block";
+
+        leftSwitchText.textContent = "Already have an account?";
+        leftSwitchLink.textContent = "Sign in";
+        leftSwitchLink.setAttribute("onclick", "switchMode('login');return false;");
+
+        switchInline.textContent = "Already have an account? Sign in";
+      }
+    }
+
+    function forgotPassword() {
+      clearMsg();
+      setMsg("err", "Password reset requires email verification (backend). If you want, I can add a reset screen + OTP flow using your server.");
+    }
+
+    function submitForm(e) {
+      e.preventDefault();
+      clearMsg();
+
+      const email = normalizeEmail(el("email").value);
+      const password = (el("password").value || "").trim();
+
+      if (!email || !password) {
+        setMsg("err", "Please fill in all required fields.");
+        return false;
+      }
+
+      if (password.length < 6) {
+        setMsg("err", "Password must be at least 6 characters.");
+        return false;
+      }
+
+      const users = getUsers();
+
+      if (mode === "signup") {
+        const name = (el("name").value || "").trim();
+        if (!name) {
+          setMsg("err", "Please enter your full name.");
+          return false;
+        }
+
+        const exists = users.some(u => u.email === email);
+        if (exists) {
+          setMsg("err", "This email is already registered. Please sign in instead.");
+          return false;
+        }
+
+        const user = {
+          id: crypto?.randomUUID ? crypto.randomUUID() : ("u_" + Date.now()),
+          name,
+          email,
+          pass: simpleHash(password),
+          createdAt: Date.now()
+        };
+
+        users.push(user);
+        saveUsers(users);
+        setSession(user);
+
+        setMsg("ok", "Account created successfully. Redirecting…");
+        setTimeout(() => window.location.href = REDIRECT_URL, 700);
+        return false;
+      }
+
+      // mode === "login"
+      const user = users.find(u => u.email === email);
+      if (!user) {
+        setMsg("err", "No account found with this email. Please create an account first.");
+        return false;
+      }
+
+      if (user.pass !== simpleHash(password)) {
+        setMsg("err", "Incorrect password. Please try again.");
+        return false;
+      }
+
+      setSession(user);
+      setMsg("ok", "Signed in successfully. Redirecting…");
+      setTimeout(() => window.location.href = REDIRECT_URL, 700);
+      return false;
+    }
+
+    // start in signup (your screenshot is signup style)
+    switchMode("signup");
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Smart Repair Alliances Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg: #f7f7f9;
+            --card: #ffffff;
+            --primary: #007aff;
+            --text: #1d1d1f;
+            --radius: 22px;
+            --shadow: 0 20px 40px rgba(0, 0, 0, .12);
+            --grad: linear-gradient(90deg, #5ddcff, #c77dff);
+            --dark1: #0b1220;
+            --dark2: #050912;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI";
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ========= HEADER ========= */
+        .hero {
+            position: relative;
+            height: 340px;
+            background: radial-gradient(1200px 520px at 50% 0%, rgba(0, 122, 255, .22), rgba(0, 0, 0, 0) 60%),
+                linear-gradient(180deg, #050b14, #030711);
+            overflow: hidden;
+        }
+
+        #waveCanvas {
+            position: absolute;
+            inset: 0
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: -40px;
+            background:
+                radial-gradient(600px 220px at 30% 30%, rgba(93, 220, 255, .18), rgba(0, 0, 0, 0) 60%),
+                radial-gradient(520px 200px at 70% 25%, rgba(199, 125, 255, .16), rgba(0, 0, 0, 0) 60%),
+                radial-gradient(700px 260px at 50% 90%, rgba(0, 122, 255, .10), rgba(0, 0, 0, 0) 60%);
+            filter: blur(10px);
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            margin: 0;
+            line-height: 1.12;
+            font-weight: 900;
+            letter-spacing: .25px;
+            text-shadow: 0 18px 60px rgba(0, 0, 0, .45);
+        }
+
+        .hero .grad {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 16px rgba(93, 220, 255, .35)) drop-shadow(0 0 18px rgba(199, 125, 255, .25));
+        }
+
+        .hero p {
+            font-size: 14px;
+            opacity: .95;
+            margin-top: 10px;
+            text-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+        }
+
+        /* ========= SERVICES ========= */
+        section {
+            max-width: 1200px;
+            margin: auto;
+            padding: 50px 20px
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 36px;
+            letter-spacing: .3px;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .service-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform .25s ease, box-shadow .25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, .17);
+        }
+
+        .service-card.blur {
+            filter: blur(4px);
+            opacity: .55
+        }
+
+        .icon {
+            width: 100%;
+            height: 185px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background:
+                radial-gradient(900px 240px at 30% 0%, rgba(0, 122, 255, .14), rgba(0, 0, 0, 0) 55%),
+                linear-gradient(180deg, #ffffff, #f3f6ff);
+            border: 1px solid rgba(0, 0, 0, .06);
+            display: grid;
+            place-items: center;
+            position: relative;
+        }
+
+        .emoji {
+            font-size: 74px;
+            line-height: 1;
+            filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .18));
+            animation: floaty 2.8s ease-in-out infinite, glowPulse 2.2s ease-in-out infinite;
+            transform-origin: center;
+            user-select: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(0, 122, 255, .35);
+            filter: blur(0.2px);
+            animation: sparkleMove 2.6s ease-in-out infinite;
+            opacity: .8;
+        }
+
+        .s1 {
+            top: 18px;
+            left: 18px;
+            animation-delay: .2s;
+        }
+
+        .s2 {
+            top: 22px;
+            right: 22px;
+            animation-delay: .6s;
+            background: rgba(199, 125, 255, .32);
+        }
+
+        .s3 {
+            bottom: 20px;
+            left: 26px;
+            animation-delay: .9s;
+            background: rgba(93, 220, 255, .32);
+        }
+
+        .s4 {
+            bottom: 18px;
+            right: 18px;
+            animation-delay: 1.2s;
+        }
+
+        @keyframes floaty {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-2deg) scale(1);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(2deg) scale(1.03);
+            }
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .18)) drop-shadow(0 0 0 rgba(0, 122, 255, 0));
+            }
+
+            50% {
+                filter: drop-shadow(0 16px 34px rgba(0, 0, 0, .20)) drop-shadow(0 0 18px rgba(0, 122, 255, .25));
+            }
+        }
+
+        @keyframes sparkleMove {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: .75;
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.25);
+                opacity: 1;
+            }
+        }
+
+        .service-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: .2px;
+        }
+
+        /* ========= DROPDOWN ========= */
+        .dropdown {
+            display: none;
+            margin-top: 14px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, .15);
+            animation: pop .18s ease;
+        }
+
+        @keyframes pop {
+            from {
+                transform: translateY(-6px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .dropdown.active {
+            display: block
+        }
+
+        .dropdown div {
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 12px;
+            background: #f4f5f8;
+            transition: .2s;
+            font-weight: 700;
+        }
+
+        .dropdown div:hover {
+            background: #e6ebff
+        }
+
+        /* ========= INLINE TOAST ========= */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 26px;
+            transform: translateX(-50%);
+            background: rgba(18, 20, 26, .92);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 14px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, .22);
+            border: 1px solid rgba(255, 255, 255, .10);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 9999;
+            max-width: min(560px, calc(100vw - 24px));
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-6px);
+        }
+
+        .toast i {
+            color: #41d17c;
+            font-size: 16px;
+        }
+
+        .toast span {
+            font-size: 14px;
+            line-height: 1.35;
+            opacity: .95;
+        }
+
+        /* ========= MODAL ========= */
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 100;
+            padding: 20px;
+        }
+
+        #modal .box {
+            background: #fff;
+            max-width: 420px;
+            margin: 90px auto;
+            padding: 24px;
+            border-radius: 22px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .25);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: border .2s, box-shadow .2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border: 1px solid rgba(0, 122, 255, .7);
+            box-shadow: 0 0 0 5px rgba(0, 122, 255, .14);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            margin-top: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform .18s ease, filter .18s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.04);
+        }
+
+        .primary {
+            background: var(--primary);
+            color: #fff
+        }
+
+        .close {
+            background: #ff3b30;
+            color: #fff
+        }
+
+        /* ========= FOOTER ========= */
+        footer {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--dark1), var(--dark2));
+            color: #fff;
+            padding: 64px 20px 18px;
+            margin-top: 60px;
+        }
+
+        #footerCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: .95;
+            pointer-events: none;
+        }
+
+        .footer-overlay {
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-divider-top {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, .18);
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .brand-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .brand-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .08);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+            border: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .brand-logo span {
+            font-weight: 900;
+            letter-spacing: .6px;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+        }
+
+        .footer-brand h3 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: .3px;
+        }
+
+        .footer-brand p {
+            font-size: 14px;
+            opacity: .85;
+            margin: 10px 0 0;
+            line-height: 1.6;
+            max-width: 420px;
+        }
+
+        .footer-social {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-social a {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            text-decoration: none;
+            transition: .25s;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, .25);
+            border: 1px solid rgba(255, 255, 255, .10);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px rgba(0, 122, 255, .25);
+        }
+
+        .footer-links h4,
+        .footer-contact h4 {
+            margin: 0 0 14px;
+            font-size: 15px;
+            letter-spacing: .2px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links ul li {
+            margin: 9px 0;
+        }
+
+        .footer-links ul li a {
+            color: rgba(203, 211, 255, .92);
+            text-decoration: none;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .footer-links ul li a:hover {
+            color: #fff;
+        }
+
+        .footer-contact p {
+            margin: 10px 0;
+            font-size: 14px;
+            opacity: .92;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            line-height: 1.45;
+        }
+
+        .footer-contact i {
+            color: #7fb2ff
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .10);
+            margin-top: 28px;
+            padding-top: 14px;
+            text-align: center;
+            font-size: 13px;
+            opacity: .82;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media(max-width:900px) {
+            .services {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(max-width:600px) {
+            .services {
+                grid-template-columns: 1fr
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <canvas id="waveCanvas"></canvas>
+        <div class="hero-content">
+            <h1>
+                <span class="grad">Home Appliance Service Management</span><br />
+                <span class="grad">Smart Repair Appliance Hub</span>
+            </h1>
+            <p>All Over India | Doorstep Services</p>
+        </div>
+    </header>
+
+    <section>
+        <h2>OUR SERVICES</h2>
+
+        <div class="services">
+
+            <!-- AC -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">❄️</div>
+                </div>
+                <div class="service-title">AC Service</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'AC Repair')">AC Repair</div>
+                    <div onclick="book(event,'AC Installation')">Installation</div>
+                    <div onclick="book(event,'AC General Service')">General Service</div>
+                </div>
+            </div>
+
+            <!-- Refrigerator -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🧊</div>
+                </div>
+                <div class="service-title">Refrigerator</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Refrigerator Repair')">Repair</div>
+                    <div onclick="book(event,'Gas Filling')">Gas Filling</div>
+                </div>
+            </div>
+
+            <!-- Washing Machine -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🌀</div>
+                </div>
+                <div class="service-title">Washing Machine</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Top Load Repair')">Top Load</div>
+                    <div onclick="book(event,'Front Load Repair')">Front Load</div>
+                </div>
+            </div>
+
+            <!-- Chimney -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🧯</div>
+                </div>
+                <div class="service-title">Chimney</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Chimney Cleaning')">Cleaning</div>
+                    <div onclick="book(event,'Chimney Repair')">Repair</div>
+                </div>
+            </div>
+
+            <!-- TV -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">📺</div>
+                </div>
+                <div class="service-title">TV Repair</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'LED/LCD Repair')">LED / LCD</div>
+                </div>
+            </div>
+
+            <!-- Water Purifier -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">💧</div>
+                </div>
+                <div class="service-title">Water Purifier</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'RO Service')">RO Service</div>
+                    <div onclick="book(event,'Filter Change')">Filter Change</div>
+                </div>
+            </div>
+
+            <!-- Geyser -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🔥</div>
+                </div>
+                <div class="service-title">Geyser</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Geyser Repair')">Repair</div>
+                    <div onclick="book(event,'Geyser Installation')">Installation</div>
+                </div>
+            </div>
+
+            <!-- Air Cooler -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🌬️</div>
+                </div>
+                <div class="service-title">Air Cooler</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Air Cooler Repair')">Repair</div>
+                </div>
+            </div>
+
+            <!-- Microwave -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🍲</div>
+                </div>
+                <div class="service-title">Microwave Oven</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Microwave Repair')">Repair</div>
+                </div>
+            </div>
+
+            <!-- Bed -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">🛏️</div>
+                </div>
+                <div class="service-title">Double Cot Bed</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Bed Fitting')">Bed Fitting</div>
+                </div>
+            </div>
+
+            <!-- Mobile -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">📱</div>
+                </div>
+                <div class="service-title">Mobile Repair</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Mobile Repair')">Repair</div>
+                </div>
+            </div>
+
+            <!-- Laptop -->
+            <div class="service-card" onclick="toggleCard(this)">
+                <div class="icon">
+                    <span class="sparkle s1"></span><span class="sparkle s2"></span><span
+                        class="sparkle s3"></span><span class="sparkle s4"></span>
+                    <div class="emoji" aria-hidden="true">💻</div>
+                </div>
+                <div class="service-title">Laptop Repair</div>
+                <div class="dropdown">
+                    <div onclick="book(event,'Laptop Repair')">Repair</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ✅ Toast message -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastText">Booking saved successfully!</span>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal">
+        <div class="box">
+            <h3 id="serviceName"></h3>
+
+            <!-- ✅ ORDER FIXED AS YOU ASKED -->
+            <input id="custName" placeholder="Customer Name">
+            <input id="custPhone" placeholder="Mobile Number">
+            <textarea id="custIssue" placeholder="Problem / Issue"></textarea>
+            <textarea id="custAddress" placeholder="Address"></textarea>
+
+            <button class="primary" onclick="confirmBooking()">Confirm Booking</button>
+            <button class="close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-divider-top"></div>
+        <canvas id="footerCanvas"></canvas>
+
+        <div class="footer-overlay">
+            <div class="footer-container">
+
+                <div class="footer-brand">
+                    <div class="brand-row">
+                        <div class="brand-logo"><span>SR</span></div>
+                        <div>
+                            <h3>SMART REPAIR APPLIANCE HUB</h3>
+                            <div style="opacity:.82;font-size:13px;margin-top:4px;">Fast • Trusted • Doorstep Service
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>Innovating Home Appliance Services with Smart Repair, fast booking and trusted technicians across
+                        India.
+                    </p>
+
+                    <div class="footer-social">
+                        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="/auth">Logout</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Our Services 24/7</h4>
+                    <ul>
+                        <li><a href="#">AC Repair & Service</a></li>
+                        <li><a href="#">Refrigerator Repair</a></li>
+                        <li><a href="#">Washing Machine Repair</a></li>
+                        <li><a href="#">RO Water Purifier</a></li> 
+                    </ul>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <p><i class="fa-solid fa-envelope"></i> support@smartrepairappliancehub.in</p>
+                    <p><i class="fa-solid fa-phone"></i> +91-8500152121</p>
+                    <p><i class="fa-solid fa-globe"></i> www.smartrepairappliancehub.in</p>
+                    <p><i class="fa-solid fa-location-dot"></i> Kadapa, Andhra Pradesh</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                © 2026 Smart Repair Appliance Hub. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check if user is logged in, else redirect to auth
+        if (!localStorage.getItem('srh_session')) {
+            window.location.href = '/auth';
+        }
+
+        // ===== Canvas setup =====
+        const c = document.getElementById("waveCanvas"), ctx = c.getContext("2d");
+        const fc = document.getElementById("footerCanvas"), fctx = fc.getContext("2d");
+
+        function resizeCanvases() {
+            c.width = innerWidth; c.height = 340;
+            fc.width = innerWidth; fc.height = document.querySelector("footer").offsetHeight;
+        }
+        resizeCanvases();
+        addEventListener("resize", resizeCanvases);
+
+        function makeDots(count, canvas, maxR = 2.8) {
+            const arr = [];
+            for (let i = 0; i < count; i++) {
+                arr.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * maxR + 0.9,
+                    vx: (Math.random() * .7 + .2) * (Math.random() < .5 ? -1 : 1),
+                    vy: (Math.random() - .5) * .25,
+                    a: Math.random() * .6 + .35
+                });
+            }
+            return arr;
+        }
+
+        const headerDots = makeDots(240, c, 3.1);
+        const footerDots = makeDots(230, fc, 2.7);
+
+        function drawGlowNetwork(context, canvas, dots, rgb = "150,220,255") {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (const d of dots) {
+                d.x += d.vx;
+                d.y += d.vy;
+
+                if (d.x > canvas.width + 25) d.x = -25;
+                if (d.x < -25) d.x = canvas.width + 25;
+                if (d.y > canvas.height + 25) d.y = -25;
+                if (d.y < -25) d.y = canvas.height + 25;
+
+                context.beginPath();
+                context.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                context.fillStyle = `rgba(${rgb},${d.a})`;
+                context.shadowBlur = 28;
+                context.shadowColor = `rgba(${rgb},0.85)`;
+                context.fill();
+            }
+
+            context.shadowBlur = 0;
+            const maxDist = 155;
+            for (let i = 0; i < dots.length; i++) {
+                for (let j = i + 1; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x;
+                    const dy = dots[i].y - dots[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * 0.36;
+                        context.beginPath();
+                        context.moveTo(dots[i].x, dots[i].y);
+                        context.lineTo(dots[j].x, dots[j].y);
+                        context.strokeStyle = `rgba(${rgb},${alpha})`;
+                        context.lineWidth = 1.15;
+                        context.stroke();
+                    }
+                }
+            }
+        }
+
+        function drawDots(context, canvas, dots, rgb = "120,210,255") {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for (const d of dots) {
+                d.x += d.vx * 0.55;
+                d.y += d.vy * 0.55;
+
+                if (d.x > canvas.width + 12) d.x = -12;
+                if (d.x < -12) d.x = canvas.width + 12;
+                if (d.y > canvas.height + 12) d.y = -12;
+                if (d.y < -12) d.y = canvas.height + 12;
+
+                context.beginPath();
+                context.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                context.fillStyle = `rgba(${rgb},${d.a})`;
+                context.fill();
+            }
+        }
+
+        (function anim() {
+            drawGlowNetwork(ctx, c, headerDots, "155,225,255");
+            drawDots(fctx, fc, footerDots, "120,210,255");
+            requestAnimationFrame(anim);
+        })();
+
+        // ===== Dropdown logic =====
+        let active = null;
+        function toggleCard(card) {
+            if (active && active !== card) closeAll();
+            const d = card.querySelector('.dropdown');
+            const open = d.classList.contains('active');
+            closeAll();
+            if (!open) {
+                d.classList.add('active');
+                active = card;
+                document.querySelectorAll('.service-card').forEach(c => {
+                    if (c !== card) c.classList.add('blur');
+                });
+            }
+        }
+
+        function closeAll() {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('blur'));
+            active = null;
+        }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.service-card')) closeAll();
+        });
+
+        // ==============================
+        // ✅ Modal + Toast
+        // ==============================
+        const toast = document.getElementById("toast");
+        const toastText = document.getElementById("toastText");
+        let toastTimer = null;
+
+        function showToast(message) {
+            toastText.textContent = message;
+            toast.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+        }
+
+        function clearModalFields() {
+            custName.value = "";
+            custPhone.value = "";
+            custIssue.value = "";
+            custAddress.value = "";
+        }
+
+        function book(e, service) {
+            e.stopPropagation();
+            serviceName.innerText = service;
+            clearModalFields();     // always blank
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            clearModalFields();
+            modal.style.display = "none";
+        }
+
+        async function confirmBooking() {
+            const service = serviceName.innerText.trim();
+
+            const name = custName.value.trim();
+            const phone = custPhone.value.trim();
+            const issue = custIssue.value.trim();
+            const address = custAddress.value.trim();
+
+            if (!name || !phone || !issue || !address) {
+                showToast("⚠️ Please fill all details");
+                return;
+            }
+
+            try {
+                const res = await fetch('/book-service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ service, name, mobile: phone, issue, address })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.error || 'Server error');
+                showToast(`✅ Booking saved successfully for ${service}`);
+                clearModalFields();
+                modal.style.display = "none";
+            } catch (err) {
+                showToast('❌ Booking failed: ' + (err.message || err));
+                console.error(err);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
